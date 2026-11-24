@@ -68,6 +68,34 @@ npm run dev
 | 历史重放 | `exchange_replay` | 重放任务 | 重放编号、归档编号、重放范围 |
 | 时效监控 | `sla_monitor` | 时效指标 | 指标编号、源端编号、约定到达时限 |
 | 通道配置 | `channel_config` | 传输通道 | 通道编号、传输协议、并发连接数 |
+| 备份包导入 | `backup_import` | 备份包 | 包编号、批次范围、来源类型、分片版本 |
+| 重放交付记录 | `replay_delivery` | 重放交付记录 | 交付编号、重放编号、批次编号、采用来源 |
+
+## 备份包导入与导入重放
+
+外部归档数据包通过 `POST /api/import-replay/packages`（原始请求体）或
+`POST /api/import-replay/packages/base64`（JSON + base64）上传。导入只做暂存与检查：
+
+- 校验压缩包结构与成员路径，损坏包、越界成员、分片校验值或条数不符直接拒收；
+- 扫描包内批次、分片、分片版本和条数，登记为来源材料；
+- 相同内容重复上传时复用原材料，不重复登记；
+- 暂存材料在重放确认前只是候选来源，不产生任何对外交付。
+
+本地归档卷恢复可读后可用 `POST /api/import-replay/local-volumes` 独立登记，
+与离线包互不影响：离线包损坏时本地归档仍可单独取回。
+
+同一批次可以有多份合法来源。当分片版本或校验值不一致时记为来源冲突，
+重放时按固定优先级逐片选定来源：本地归档卷优先于离线包，同类型中已核验/可读优先，
+其余按材料编号排序，结果可复现。
+
+- `GET /api/import-replay/batches/{批次}/sources`：候选来源、冲突与来源预览；
+- `POST /api/import-replay/replays`：按批次申请重放，只生成待重放任务；
+- `POST /api/import-replay/replays/{id}/confirm`：确认重放，逐片取源写重放产物，
+  由传输血缘保存交付记录，并在 `replay_delivery` 中登记实际采用的来源；
+- `GET /api/import-replay/replays/{id}/delivery`：查看本次从哪份材料取了哪些分片、
+  还有哪些差异留待复核；
+- `GET /api/import-replay/batches/{批次}/scope`：已确认的重放交付范围，
+  重复上传或上传坏包后可用它核对范围与本地卷读取是否被扰动。
 
 ## 约定
 

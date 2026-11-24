@@ -32,6 +32,7 @@
 import { computed, onMounted, ref } from 'vue'
 
 import { fetchJson } from '@/api/client'
+import { MODULES } from '@/data/modules'
 
 type Overview = {
   cards: { label: string; value: number }[]
@@ -47,8 +48,15 @@ onMounted(async () => {
     cards.value = payload.cards
     moduleRows.value = payload.modules
   } catch {
-    cards.value = [{"label": "业务模块", "value": 0}, {"label": "今日新增", "value": 0}]
-    moduleRows.value = [{"name": "源端登记", "created": 0, "pending": 0, "abnormal": 0}, {"name": "目标端登记", "created": 0, "pending": 0, "abnormal": 0}, {"name": "字段契约", "created": 0, "pending": 0, "abnormal": 0}, {"name": "增量窗口", "created": 0, "pending": 0, "abnormal": 0}, {"name": "传输批次", "created": 0, "pending": 0, "abnormal": 0}, {"name": "暂存落地", "created": 0, "pending": 0, "abnormal": 0}, {"name": "校验核对", "created": 0, "pending": 0, "abnormal": 0}, {"name": "到达对账", "created": 0, "pending": 0, "abnormal": 0}, {"name": "字段冲突", "created": 0, "pending": 0, "abnormal": 0}, {"name": "断点续传", "created": 0, "pending": 0, "abnormal": 0}, {"name": "速率整形", "created": 0, "pending": 0, "abnormal": 0}, {"name": "拒收回执", "created": 0, "pending": 0, "abnormal": 0}, {"name": "格式适配", "created": 0, "pending": 0, "abnormal": 0}, {"name": "传输血缘", "created": 0, "pending": 0, "abnormal": 0}, {"name": "批次归档", "created": 0, "pending": 0, "abnormal": 0}, {"name": "历史重放", "created": 0, "pending": 0, "abnormal": 0}, {"name": "时效监控", "created": 0, "pending": 0, "abnormal": 0}, {"name": "通道配置", "created": 0, "pending": 0, "abnormal": 0}]
+    cards.value = [
+      { label: '业务模块', value: 0 },
+      { label: '今日新增', value: 0 },
+      { label: '待处理', value: 0 },
+      { label: '异常量', value: 0 },
+    ]
+    moduleRows.value = MODULES.map((item) => ({
+      name: item.name, created: 0, pending: 0, abnormal: 0,
+    }))
   }
 })
 </script>

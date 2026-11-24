@@ -20,6 +20,8 @@ from app.services.history_archive import HistoryArchiveService
 from app.services.exchange_replay import ExchangeReplayService
 from app.services.sla_monitor import SlaMonitorService
 from app.services.channel_config import ChannelConfigService
+from app.services.backup_import import BackupImportService
+from app.services.replay_delivery import ReplayDeliveryService
 
 SERVICES: dict[str, BaseModuleService] = {
     "source_register": SourceRegisterService(),
@@ -40,6 +42,8 @@ SERVICES: dict[str, BaseModuleService] = {
     "exchange_replay": ExchangeReplayService(),
     "sla_monitor": SlaMonitorService(),
     "channel_config": ChannelConfigService(),
+    "backup_import": BackupImportService(),
+    "replay_delivery": ReplayDeliveryService(),
 }
 
 

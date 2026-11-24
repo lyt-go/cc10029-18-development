@@ -90,6 +90,8 @@
       <span>共 {{ total }} 条{{ meta.name }}记录</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
+
+    <ImportReplayPanel v-if="showImportPanel" />
   </section>
 </template>
 
@@ -103,10 +105,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/backend-service'
+import ImportReplayPanel from '@/components/ImportReplayPanel.vue'
 import type { EntryRow } from '@/data/types'
 
 const props = defineProps<{ moduleKey: string }>()
 const meta = moduleMeta(props.moduleKey)
+const showImportPanel = computed(() =>
+  ['backup_import', 'exchange_replay', 'replay_delivery', 'history_archive'].includes(props.moduleKey),
+)
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
